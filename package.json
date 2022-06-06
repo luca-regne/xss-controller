@@ -2,9 +2,10 @@
   "name": "xss-keylogger",
   "version": "1.0.0",
   "description": "XSS Keylogger Server with WebSocket",
-  "main": "src/server.js",
+  "main": "app/server.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node app/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,9 +16,7 @@
     "xss",
     "keylogger",
     "websocket",
-    "socket.io",
-    "cross-site",
-    "scripting"
+    "socket.io"
   ],
   "author": "Luca Regne (https://regne.me)",
   "license": "MIT",
@@ -26,6 +25,7 @@
   },
   "homepage": "https://github.com/luca-regne/xss-keylogger#readme",
   "dependencies": {
+    "ejs": "^3.1.8",
     "express": "^4.18.1",
     "socket.io": "^4.5.1"
   }
