@@ -6,6 +6,7 @@ XSS Controller is a framework to deliver malicious javascript inside XSS payload
 - Remote redirect
 - Cookies theft and Hijacking
 - Remote JavaScript Execution
+- Connection with HTTPS to bypass Mixed Content
 
 ## Execution
 ```bash
