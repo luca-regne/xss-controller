@@ -2,11 +2,11 @@ import { create } from "node-datetime"; 'node-datetime';
 
 export function request(req, res, next) {
     if (req.method === 'GET') {
-        info(req.socket.remoteAddress, req.uri, 'GET', req.query)
+        info(req.socket.remoteAddress, 'GET', req.url, req.query.toString())
     } else if (req.method === 'POST') {
-        info(req.socket.remoteAddress, req.uri, 'POST', req.body)
+        info(req.socket.remoteAddress, 'POST', req.url, req.body.toString())
     } else {
-        info(req.socket.remoteAddress, req.uri, req.method, null)
+        info(req.socket.remoteAddress, req.method, req.url, null)
     }
     next()
 }
@@ -20,5 +20,5 @@ export function socketVictim(socket, type, data) {
 }
 
 export function info(id, source, type, data) {
-    console.log(`${create().format('Y-m-d H:M:S')} ::: ${id} ::: ${source} ::: ${type} ::: ${data}`);
+    console.log(`${create().format('Y-m-d H:M:S')} ::: ${id} ::: ${source}${type ? `/${type}` : ''} ${data ? `::: ${data}` : ''} `);
 }

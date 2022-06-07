@@ -38,7 +38,7 @@ const io = new Server(socketServer, {
 const spy = io
     .of('/spy')
     .on('connection', (socket) => {
-        logger.socketSpy(socket, 'connected');
+        logger.socketSpy(socket, '', 'connected');
 
         socket.on('eval', function (js) {
             logger.socketSpy(socket, 'eval', js);
@@ -46,14 +46,14 @@ const spy = io
         });
 
         socket.on('disconnect', () => {
-            logger.socketSpy(socket, 'disconnected');
+            logger.socketSpy(socket, '', 'disconnected');
         });
     });
 
 const victim = io
     .of('/victim')
     .on('connection', (socket) => {
-        logger.socketVictim(socket, 'connected');
+        logger.socketVictim(socket, '', 'connected');
 
         socket.on('type', function (key) {
             logger.socketVictim(socket, 'type', key);
@@ -77,7 +77,7 @@ const victim = io
 
 
         socket.on('disconnect', function () {
-            logger.socketVictim(socket, 'disconnected');
+            logger.socketVictim(socket, '', 'disconnected');
         });
     });
 
