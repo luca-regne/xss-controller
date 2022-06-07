@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  font: 13px Helvetica, Arial;
+}
+h1 {
+  margin-bottom: 20px;
+}
+#messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#messages li {
+  padding: 5px 10px;
+}
+#messages li:nth-child(odd) {
+  background: #eee;
+}
+textarea {
+  display: block;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 300px;
+  font: 16px Consolas, Courier, monospace;
+}
+.col {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
