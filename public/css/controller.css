@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  font: 13px Helvetica, Arial;
+  color: white;
+  background-color: #041c32;
+}
+
+#controller {
+  margin: 2% 10%;
+}
+
+input,
+textarea,
+button {
+  margin: 1% 0;
+}
+
+textarea {
+  display: block;
+  height: 30%;
+  font: 16px Consolas, Courier, monospace;
+}
+
+.btn-primary {
+  background-color: #064663;
+  border: white;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #ecb365;
+  border: black;
+  color: black;
+}
+
+.col {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
