@@ -1,4 +1,4 @@
-var messages = document.getElementById('messages');
+var keylogger = document.getElementById('keylogger');
 
 chat = {
     newLineInitialised: false,
@@ -14,7 +14,7 @@ chat = {
             case 'Enter':
                 key = '</br>'
             default:
-                var lastLine = document.querySelector('#messages li:last-child');
+                var lastLine = document.querySelector('#keylogger li:last-child');
                 lastLine.innerHTML += key;
                 this.newLineInitialised = false;
         }
@@ -24,7 +24,7 @@ chat = {
         if (msg) {
             li.innerHTML = msg;
         }
-        messages.appendChild(li);
+        keylogger.appendChild(li);
 
         this.newLineInitialised = true;
     }
@@ -34,7 +34,7 @@ var lastElement = '';
 var newLine = false;
 elementChange = function (newElement) {
     if (lastElement !== newElement) {
-        var message = 'User changed element to: <b>' + newElement + '</b>';
+        var message = 'Changed to: <b>' + newElement + '</b>';
         chat.newLine(message);
         lastElement = newElement;
     }
