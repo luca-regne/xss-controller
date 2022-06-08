@@ -1,14 +1,12 @@
 # XSS Controller
 
-XSS Controller is a framework to deliver malicious javascript inside XSS payloads and make betters PoC to demonstrate the impact of successful exploration of XSS.
+XSS Controller is a framework to deliver malicious javascript inside XSS payloads and make better PoC to demonstrate the impact of successful XSS exploration.
 
 ## Features
 
-- KeyLogger
+- KeyLogger via WebSocket
 - Remote redirect
-- Cookies theft and Hijacking
 - Remote JavaScript Execution
-- Connection with HTTPS to bypass Mixed Content
 
 ## Setup
 
